@@ -1,0 +1,6 @@
+@SPAWebApi.Server_HostAddress = http://localhost:5287
+
+GET {{SPAWebApi.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
