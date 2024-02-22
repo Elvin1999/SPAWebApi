@@ -1,25 +1,32 @@
-﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SPAWebApi.Server.Dtos;
+using SPAWebApi.Server.Entities;
 using SPAWebApi.Server.Repositories;
 
 namespace SPAWebApi.Server.Controllers
 {
-    [Route("[controller]")]
     [ApiController]
+    [Route("[controller]")]
     public class CarController : ControllerBase
     {
+        private static readonly string[] Summaries = new[]
+        {
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        };
+
+        private readonly ILogger<CarController> _logger;
         private readonly ICarRepository _carRepository;
 
-        public CarController(ICarRepository carRepository)
+        public CarController(ILogger<CarController> logger, ICarRepository carRepository)
         {
+            _logger = logger;
             _carRepository = carRepository;
         }
 
-        [HttpGet("GetSpecialCars")]
-        public IEnumerable<CarDto> GetCars()
+        [HttpGet(Name = "GetCar")]
+        public IEnumerable<CarDto> Get()
         {
-            var result =  _carRepository.GetCars();
+            var result = _carRepository.GetCars();
             var dtos = result.Select(c =>
             {
                 return new CarDto
@@ -34,6 +41,44 @@ namespace SPAWebApi.Server.Controllers
                 };
             }).ToArray();
             return dtos;
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                _carRepository.Delete(id);
+                return NoContent(); 
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        public IActionResult Update(CarDto carDto)
+        {
+            try
+            {
+                var entity = new Car
+                {
+                     Brand = carDto.Brand,
+                      Color = carDto.Color,
+                       Distance=carDto.Distance,
+                        EngineVolume=carDto.EngineVolume,
+                         Id = carDto.Id ,
+                          Model = carDto.Model,
+                           Year=carDto.Year 
+                };
+                _carRepository.Update(entity);
+                return Ok(entity);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);  
+            }
         }
     }
 }

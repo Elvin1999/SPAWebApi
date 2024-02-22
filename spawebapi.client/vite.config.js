@@ -46,7 +46,11 @@ export default defineConfig({
     },
     server: {
         proxy: {
-            '^/weatherforecast': {
+            '^/car': {
+                target: 'https://localhost:7299/',
+                secure: false
+            },
+            '^/student': {
                 target: 'https://localhost:7299/',
                 secure: false
             }

@@ -15,6 +15,15 @@ namespace SPAWebApi.Server
 
             var conn = builder.Configuration.GetConnectionString(NamesConstants.LocalConnection);
 
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader());
+            });
+
             builder.Services.AddDbContext<CarContext>(opt =>
             {
                 opt.UseSqlServer(conn);
@@ -36,6 +45,14 @@ namespace SPAWebApi.Server
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCors(builder => builder.AllowAnyOrigin()); // Allow requests from any origin
+            app.UseCors(builder => builder.WithOrigins("https://localhost:7299")); // Allow requests only from domain.com
+            app.UseCors(builder => builder.AllowAnyHeader()); // Allow any header in the request
+            app.UseCors(builder => builder.AllowAnyMethod()); // Allow any HTTP method in the request
+                                                              //app.UseCors(MyAllowSpecificOrigins);
+            
+
 
             app.UseHttpsRedirection();
 
